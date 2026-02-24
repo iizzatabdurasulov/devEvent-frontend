@@ -6,7 +6,7 @@ const HomePage = () => {
     <div className="">
       <div className="max-w-161  mx-auto mb-15  text-center ">
         <h1 className="capitalize font-semibold lg:text-[50px] text-[40px] leading-15 space-x-0.5 bg-[linear-gradient(179.01deg,#FFFFFF_0.85%,#00CBFF_484.31%)] bg-clip-text text-transparent">
-          The Hub for Every Dev Event you can't miss
+          The Hub for Every Dev Event you can't miss!
         </h1>
         <p className="lg:text-[18px] text-[14px] leading-7 text-[#E7F2FF] pt-3 lg:pb-7 pb-5">
           Hackathons, Meetups, and Conferences, All in One Place
