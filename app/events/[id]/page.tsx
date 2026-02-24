@@ -35,7 +35,7 @@ const ProductDetail = async ({ params }: Props) => {
 
   return (
     <div>
-      <div className="flex items-center md:flex-row flex-col gap-y-7.5 justify-between">
+      <div className="flex items-center md:flex-row flex-col gap-y-7.5 justify-between  pb-4">
         <div className="md:w-[60%] w-full">
           <h1 className="capitalize font-semibold lg:text-[50px] text-[40px] leading-15 space-x-0.5 bg-[linear-gradient(179.01deg,#FFFFFF_0.85%,#00CBFF_484.31%)] bg-clip-text text-transparent">
             {event.title}

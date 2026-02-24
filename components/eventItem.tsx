@@ -10,15 +10,14 @@ const EventItem = ({ data }: Props) => {
   const getEventImage = (): string => {
     if (data.images && data.images.length > 0) {
       const firstImage = data.images[0];
-
       if (
         firstImage.startsWith("http://") ||
-        firstImage.startsWith("https://")
+        firstImage.startsWith("https://") ||
+        firstImage.startsWith("/")
       ) {
         return firstImage;
       }
     }
-
     return "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=300&fit=crop&auto=format";
   };
 
@@ -37,7 +36,7 @@ const EventItem = ({ data }: Props) => {
     }
   };
 
-  const eventId = data._id
+  const eventId = data._id;
 
   return (
     <Link
@@ -74,9 +73,9 @@ const EventItem = ({ data }: Props) => {
         {data.title}
       </h2>
 
-      <div className="flex gap-2 items-center">
-        <h4 className="text-[#BDBDBD] text-[14px] font-secondary leading-4.5 font-light space-x-[-10%]">
-          {formatDate(data.date)}
+      <div className="flex gap-1 items-center">
+        <h4 className="text-[#BDBDBD] text-[12px] font-secondary leading-4.5 font-light space-x-[-10%]">
+          {data.date}
         </h4>
         <Image
           src="/icons/line.svg"
@@ -85,7 +84,7 @@ const EventItem = ({ data }: Props) => {
           alt="line"
           className="w-8 h-4"
         />
-        <h4 className="text-[#BDBDBD] font-secondary text-[14px] leading-4.5 font-light space-x-[-10%]">
+        <h4 className="text-[#BDBDBD] font-secondary text-[12px] leading-4.5 font-light space-x-[-10%]">
           {data.time || "TBA"}
         </h4>
       </div>
