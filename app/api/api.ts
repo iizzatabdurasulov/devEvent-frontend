@@ -1,6 +1,6 @@
 import { IEvent } from "@/types/index.types";
 
-const API_URL = "https://devevent-backend-production.up.railway.app";
+const API_URL = "https://devevent-backend-production.up.railway.app/api";
 
 // Get events
 export const getEvents = async (): Promise<IEvent[]> => {
