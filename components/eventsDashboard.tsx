@@ -27,7 +27,7 @@ const EventsDashboard: React.FC<EventsDashboardProps> = ({
   const [events, setEvents] = useState<IEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [deletingId, setDeletingId] = useState<string | null>(null); // ✅ qo'shildi
+  const [deletingId, setDeletingId] = useState<number | null>(null);
   const router = useRouter();
   const fetchEvents = async () => {
     try {
@@ -47,8 +47,8 @@ const EventsDashboard: React.FC<EventsDashboardProps> = ({
     fetchEvents();
   }, []);
 
-  const handleDelete = (id?: string) => {
-    if (!id) {
+  const handleDelete = (id?: number) => {
+    if (id === undefined) {
       toast.error("Event id not found");
       return;
     }
@@ -61,14 +61,14 @@ const EventsDashboard: React.FC<EventsDashboardProps> = ({
     }
   };
 
-  const confirmDelete = async (id: string) => {
+  const confirmDelete = async (id: number) => {
     try {
       setDeletingId(id);
       console.log("Deleting event with ID:", id);
       const response = await deleteEvent(id);
       console.log("Delete response:", response);
 
-      setEvents((prev) => prev.filter((e) => e._id !== id));
+      setEvents((prev) => prev.filter((e) => e.id !== id));
       toast.success("Event successfully deleted");
     } catch (err: any) {
       console.error("Error deleting event:", err);
@@ -76,7 +76,7 @@ const EventsDashboard: React.FC<EventsDashboardProps> = ({
       console.error("Error response:", err?.response?.data);
       toast.error(
         err?.response?.data?.message ||
-          "Error deleting event. Please try again.",
+        "Error deleting event. Please try again.",
       );
     } finally {
       setDeletingId(null);
@@ -116,8 +116,8 @@ const EventsDashboard: React.FC<EventsDashboardProps> = ({
         <TableBody>
           {events.map((item) => (
             <TableRow
-              onClick={() => router.push(`/events/${item._id}`)}
-              key={item._id}
+              onClick={() => router.push(`/events/${item.id}`)}
+              key={item.id}
               className="cursor-pointer"
             >
               <TableCell className={cn("flex items-center gap-4")}>
@@ -138,17 +138,17 @@ const EventsDashboard: React.FC<EventsDashboardProps> = ({
               {isAdmin && (
                 <TableCell className={cn("space-x-2")}>
                   <Link
-                    href={`/adminManagement/edit/event/${item._id}`}
+                    href={`/adminManagement/edit/event/${item.id}`}
                     className="hover:underline"
                   >
                     Edit
                   </Link>
                   <button
-                    onClick={() => handleDelete(item._id)}
-                    disabled={deletingId === item._id}
+                    onClick={() => handleDelete(item.id)}
+                    disabled={deletingId === item.id}
                     className="text-red-400 cursor-pointer hover:underline disabled:opacity-50"
                   >
-                    {deletingId === item._id ? "Deleting..." : "Delete"}
+                    {deletingId === item.id ? "Deleting..." : "Delete"}
                   </button>
                 </TableCell>
               )}

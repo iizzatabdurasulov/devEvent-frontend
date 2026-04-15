@@ -36,7 +36,7 @@ const EventItem = ({ data }: Props) => {
     }
   };
 
-  const eventId = data._id;
+  const eventId = data.id;
 
   return (
     <Link

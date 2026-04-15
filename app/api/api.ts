@@ -1,98 +1,88 @@
+import { events } from "@/constants/constants";
 import { IEvent } from "@/types/index.types";
 
-const API_URL = "https://devevent-backend-production.up.railway.app/api";
+const resolveEventId = (id: number | string): number => {
+  const numericId = typeof id === "string" ? Number(id) : id;
+  if (Number.isNaN(numericId)) {
+    throw new Error("Invalid event ID");
+  }
+  return numericId;
+};
 
 // Get events
 export const getEvents = async (): Promise<IEvent[]> => {
-  const response = await fetch(`${API_URL}/events`);
-  if (!response.ok) throw new Error("Failed to fetch events");
-  return response.json();
+  return events;
 };
 
 // Get event by ID
-export const getEventById = async (id: string): Promise<IEvent> => {
-  const response = await fetch(`${API_URL}/events/${id}`);
-  if (!response.ok) throw new Error("Failed to fetch event");
-  return response.json();
+export const getEventById = async (id: number | string): Promise<IEvent> => {
+  const numericId = resolveEventId(id);
+  const event = events.find((e) => e.id === numericId);
+
+  if (!event) {
+    throw new Error("Event not found");
+  }
+
+  return event;
 };
 
 // Create event
 export const createEvent = async (
-  event: Omit<IEvent, "_id" | "createdAt" | "updatedAt">,
+  event: Omit<IEvent, "id">,
 ): Promise<IEvent> => {
-  const response = await fetch(`${API_URL}/events`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(event),
-  });
-  if (!response.ok) throw new Error("Failed to create event");
-  return response.json();
+  const newId =
+    events.length > 0 ? Math.max(...events.map((e) => e.id)) + 1 : 1;
+  const newEvent: IEvent = {
+    ...event,
+    id: newId,
+    bookedEmails: event.bookedEmails ?? [],
+  } as IEvent;
+
+  events.push(newEvent);
+  return newEvent;
 };
 
 // Update event
 export const updateEvent = async (
-  id: string,
-  event: Partial<IEvent>,
+  id: number | string,
+  updatedData: Partial<IEvent>,
 ): Promise<IEvent> => {
-  const response = await fetch(`${API_URL}/events/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(event),
-  });
-  if (!response.ok) throw new Error("Failed to update event");
-  return response.json();
+  const numericId = resolveEventId(id);
+  const index = events.findIndex((e) => e.id === numericId);
+
+  if (index === -1) throw new Error("Event not found");
+
+  events[index] = { ...events[index], ...updatedData };
+  return events[index];
 };
 
 // Delete event
-export const deleteEvent = async (id: string): Promise<IEvent> => {
-  const response = await fetch(`${API_URL}/events/${id}`, {
-    method: "DELETE",
-  });
-  if (!response.ok) throw new Error("Failed to delete event");
-  return response.json();
-};
+export const deleteEvent = async (id: number | string): Promise<IEvent> => {
+  const numericId = resolveEventId(id);
+  const index = events.findIndex((e) => e.id === numericId);
 
-// Upload image
-export const uploadImage = async (base64: string): Promise<string> => {
-  const response = await fetch(`${API_URL}/upload`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ image: base64 }),
-  });
+  if (index === -1) throw new Error("Event not found");
 
-  if (!response.ok) {
-    throw new Error("Failed to upload image");
-  }
-
-  const data = await response.json();
-  return data.url; // Supabase public URL
-};
-
-// Delete image
-export const deleteImage = async (fileName: string): Promise<void> => {
-  const response = await fetch(`${API_URL}/upload`, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ fileName }),
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to delete image");
-  }
+  const deleted = events.splice(index, 1)[0];
+  return deleted;
 };
 
 // Book event
-export const bookEvent = async (id: string, email: string): Promise<IEvent> => {
-  const response = await fetch(`${API_URL}/events/${id}/book`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email }),
-  });
+export const bookEvent = async (
+  id: number | string,
+  email: string,
+): Promise<IEvent> => {
+  const numericId = resolveEventId(id);
+  const event = events.find((e) => e.id === numericId);
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Failed to book event");
+  if (!event) throw new Error("Event not found");
+
+  if (event.bookedEmails.includes(email)) {
+    throw new Error("Already booked");
   }
 
-  return response.json();
+  event.bookedEmails.push(email);
+  event.bookedSpots += 1;
+
+  return event;
 };
